@@ -5,12 +5,16 @@ defmodule Nanoid.NonSecure do
   """
 
   ## -- DEFAULT ATTRIBUTES
-  @default_size Application.get_env(:nanoid, :size, 21)
-  @default_alphabet Application.get_env(
-                      :nanoid,
-                      :alphabet,
-                      "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    )
+
+  defp default_size(), do: Application.get_env(:nanoid, :size, 21)
+
+  defp default_alphabet() do
+    Application.get_env(
+      :nanoid,
+      :alphabet,
+      "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    )
+  end
 
   @doc """
   Generates a non-secure NanoID using the default alphabet.
@@ -24,9 +28,9 @@ defmodule Nanoid.NonSecure do
       "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
   """
   @spec generate(Integer.t()) :: String.t()
-  def generate(size \\ @default_size)
-  def generate(size) when is_integer(size) and size > 0, do: generator(size, @default_alphabet)
-  def generate(_size), do: generator(@default_size, @default_alphabet)
+  def generate(size \\ default_size())
+  def generate(size) when is_integer(size) and size > 0, do: generator(size, default_alphabet())
+  def generate(_size), do: generator(default_size(), default_alphabet())
 
   @doc """
   Generate a non-secure NanoID using a custom size and an individual alphabet.
@@ -49,9 +53,9 @@ defmodule Nanoid.NonSecure do
     do: generator(size, alphabet)
 
   def generate(size, _alphabet) when is_integer(size) and size > 0,
-    do: generate(size, @default_alphabet)
+    do: generate(size, default_alphabet())
 
-  def generate(_size, _alphabet), do: generate(@default_size, @default_alphabet)
+  def generate(_size, _alphabet), do: generate(default_size(), default_alphabet())
 
   @spec generator(Integer.t(), String.t()) :: String.t()
   defp generator(size, alphabet)
@@ -66,5 +70,5 @@ defmodule Nanoid.NonSecure do
     |> Enum.join()
   end
 
-  defp generator(_size, _alphabet), do: generator(@default_size, @default_alphabet)
+  defp generator(_size, _alphabet), do: generator(default_size(), default_alphabet())
 end

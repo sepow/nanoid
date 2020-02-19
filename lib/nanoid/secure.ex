@@ -8,13 +8,18 @@ defmodule Nanoid.Secure do
 
   ## -- DEFAULT ATTRIBUTES
   @default_mask 63
-  @default_size Application.get_env(:nanoid, :size, 21)
-  @default_alphabet Application.get_env(
-                      :nanoid,
-                      :alphabet,
-                      "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    )
-  @default_alphabet_length String.length(@default_alphabet)
+
+  defp default_size(), do: Application.get_env(:nanoid, :size, 21)
+
+  defp default_alphabet() do
+    Application.get_env(
+      :nanoid,
+      :alphabet,
+      "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    )
+  end
+
+  defp default_alphabet_length(), do: String.length(default_alphabet())
 
   @doc """
   Generates a secure NanoID using the default alphabet.
@@ -28,14 +33,14 @@ defmodule Nanoid.Secure do
       "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
   """
   @spec generate(Integer.t()) :: String.t()
-  def generate(size \\ @default_size)
+  def generate(size \\ default_size())
 
   def generate(size) when is_integer(size) and size > 0 do
-    step = calculate_step(@default_mask, size, @default_alphabet_length)
-    do_generate(size, @default_alphabet, @default_mask, step)
+    step = calculate_step(@default_mask, size, default_alphabet_length())
+    do_generate(size, default_alphabet(), @default_mask, step)
   end
 
-  def generate(_size), do: generate(@default_size)
+  def generate(_size), do: generate(default_size())
 
   @doc """
   Generates a secure NanoID using a custom size and an individual alphabet.
@@ -63,10 +68,10 @@ defmodule Nanoid.Secure do
     do: generate(size, to_string(alphabet))
 
   def generate(size, _alphabet) when is_integer(size) and size > 0,
-    do: generate(size, @default_alphabet)
+    do: generate(size, default_alphabet())
 
   def generate(_size, _alphabet),
-    do: generate(@default_size, @default_alphabet)
+    do: generate(default_size(), default_alphabet())
 
   # Generate NanoID recursively as long as the given size is reached
   @spec do_generate(Integer.t(), String.t(), Integer.t(), Integer.t(), String.t()) :: String.t()
@@ -98,7 +103,7 @@ defmodule Nanoid.Secure do
   end
 
   defp generator(_size, _alphabet, _mask),
-    do: generator(@default_size, @default_alphabet, @default_mask)
+    do: generator(default_size(), default_alphabet(), @default_mask)
 
   @spec calculate_mask(Integer.t()) :: Integer.t()
   defp calculate_mask(alphabet_length)
@@ -128,5 +133,5 @@ defmodule Nanoid.Secure do
     |> :binary.bin_to_list()
   end
 
-  defp random_bytes(_size), do: random_bytes(@default_size)
+  defp random_bytes(_size), do: random_bytes(default_size())
 end
